@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import messagebox
 from db import login_user
 
-
 def open_main_window(user_data):
     auth_root.destroy()
     import main_window
