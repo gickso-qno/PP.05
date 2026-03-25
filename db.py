@@ -27,22 +27,51 @@ def login_user(username: str, password: str):
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                        SELECT "ID", username, password
+                        SELECT "ID", username, password, failed_attempts, is_blocked
                         FROM users
                         WHERE username = %s""", (username,))
             
             user = cur.fetchone()
 
             if not user:
-                return None, "Вы ввели неверный логин или пароль. Пожалуйста проверьте еще раз введенные данные."
+                return None, "Вы ввели неверный логин. Пожалуйста проверьте еще раз введенные данные."
             
-            user_id, username_db, stored_password = user
+            user_id, username_db, stored_password, failed_attempts, is_bloсked = user
+
+            if is_bloсked:
+                return None, "Ваш аккаунт заблокирован. Обратитесь к администратору"
 
             if stored_password == password:
-                print("Пароли совпали")
+                cur.execute("""
+                    UPDATE users
+                    SET failed_attempts = 0
+                    WHERE "ID" = %s
+                """, (user_id,))
+                conn.commit()
                 return (user_id, username_db, None, None, "users"), None
-            elif password != password:
-                return None, "Вы ввели неверный логин или пароль. Пожалуйста проверьте еще раз введенные данные."
+            else:
+                failed_attempts += 1
+            
+                if failed_attempts >= 3:
+                        cur.execute("""
+                            UPDATE users
+                            SET failed_attempts = %s,
+                                is_blocked = TRUE
+                            WHERE "ID" = %s
+                        """, (failed_attempts, user_id))
+                        conn.commit()
+
+                        return None, "Аккаунт заблокирован после 3 неудачных попыток"
+                    
+                else:
+                    cur.execute("""
+                        UPDATE users
+                        SET failed_attempts = %s
+                        WHERE "ID" = %s
+                    """, (failed_attempts, user_id))
+                    conn.commit()
+
+                    return None, f"Неверный пароль. Попытка {failed_attempts}/3"
 
     except Exception as e: 
         print(f"[ОШИБКА в login_user] {type(e).__name__}: {e}")

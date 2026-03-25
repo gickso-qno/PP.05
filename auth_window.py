@@ -1,11 +1,11 @@
 from tkinter import *
 from tkinter import messagebox
 from db import login_user
+from captcha import CaptchaWindow
 
 def open_main_window(user_data):
-    auth_root.destroy()
-    import main_window
-    main_window.create_main_window(user_data)
+    from main_window import create_main_window
+    create_main_window(user_data)
 
 def login_click():
     username = username_entry.get()
@@ -21,8 +21,12 @@ def login_click():
         messagebox.showerror("Ошибка", error)
     else:
         messagebox.showinfo("Успех!", "Вы успешно авторизовались!")
-        open_main_window(user_data)
+        auth_root.destroy()
 
+        captcha_root = Tk()
+        CaptchaWindow(captcha_root, username, lambda: open_main_window(user_data))
+        
+        captcha_root.mainloop()
 
 auth_root = Tk()
 auth_root.title("Авторизация")
