@@ -1,0 +1,26 @@
+name: My Config
+version: 1.0.0
+schema: v1
+
+models:
+
+  - name: Claude Opus 4.6
+    provider: anthropic
+    model: anthropic/claude-opus-4.6
+    apiBase: https://arbitron.dev/multi/gl/v1
+    apiKey: gw-b21162283f7f6d8005afd5e2e370ec416fdc3a1edabccabd
+    capabilities": [] 
+
+  - name: Qwen3.6 Plus (free)
+    provider: openrouter
+    model: qwen/qwen3.6-plus:free
+    apiBase: https://openrouter.ai/api/v1
+    apiKey: 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
+    capabilities": [] 
+
+  - name: Step 3.5 Flash (free)
+    provider: openrouter
+    model: stepfun/step-3.5-flash:free
+    apiBase: https://openrouter.ai/api/v1
+    apiKey: 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
+    capabilities": [] 
